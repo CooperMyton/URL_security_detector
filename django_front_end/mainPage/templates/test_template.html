@@ -11,14 +11,41 @@
         <p>Below the text box, we'll have some mix of generated html and calling up preexisting answer templates.</p>
         <p>before we're done with the project, we'll have to set up a production server instead of the dev server, but that shouldn't be too bad.</p>
 
-        <form action="/mainPage/" method="post">
+        <form action="{% url 'mainPage' %}" method="post">
             {% csrf_token %}
             {{ url_form }}
             <input type="submit" value="Submit">
         </form>
         <p>Dynamic scan results:
 
-            {{ scan_results }}
+            {% if scan_results.url %}
+                <hr>
+                <h2>Results for: {{ scan_results.url }}</h2>
+
+                {% if scan_results.https_result.vulnerable %}
+                    <p style="color:red;">
+                        <strong>Vulnerability:</strong> 
+                        {{ scan_results.https_result.issue }}
+                    </p>
+                    <p>{{ scan_results.https_result.explanation }}</p>
+                {% else %}
+                    <p style="color:green;">
+                        HTTPS Check Passed
+                    </p>
+                    <p>{{ scan_results.https_result.explanation }}</p>
+                {% endif %}
+
+                <h3>Reachability</h3>
+                {% if scan_results.reachability.reachable %}
+                    <p>Site Reachable (Status Code: {{ scan_results.reachability.status_code }})</p>
+                {% else %}
+                    <p style="color:red;">
+                        Site Not Reachable
+                    </p>
+                    <p>Error: {{ scan_results.reachability.error }}</p>
+                {% endif %}
+            {% endif %}
+
         </p>
     </body>
 </html>
