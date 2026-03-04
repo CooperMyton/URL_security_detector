@@ -5,6 +5,7 @@ from .forms import URLForm
 from urllib.parse import urlparse
 from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
+import re
 
 #Basic url checker
 def check_https(url):
@@ -56,10 +57,57 @@ def check_reachability(url):
             "reachable": False,
             "error": str(e.reason),
             "what_it_means": "The site could not be reached.",
-            "how_detected": "The connection attempt failed.",
+            "how_detected": "The connection attempt to the server failed.",
             "risk": "The domain may not exist, may be offline, or could be suspicious.",
             "what_to_do": "Avoid interacting with unreachable or unknown domains."
         }
+
+def check_suspicious_domain_format(url):
+    """
+    Checks for excessive hyphens or unusual symbols in the domain.
+    """
+
+    parsed = urlparse(url)
+    domain = parsed.netloc
+
+    # Remove port if present (example.com:8000)
+    domain = domain.split(":")[0]
+
+    hyphen_count = domain.count("-")
+
+    # Check for non-alphanumeric characters besides dot and hyphen
+    unusual_symbols = re.findall(r"[^a-zA-Z0-9.-]", domain)
+
+    suspicious = False
+    reasons = []
+
+    if hyphen_count >= 2:
+        suspicious = True
+        reasons.append("Domain contains multiple hyphens.")
+
+    if unusual_symbols:
+        suspicious = True
+        reasons.append("Domain contains unusual symbols.")
+
+    if suspicious:
+        return {
+            "vulnerable": True,
+            "issue": "Suspicious Domain Format",
+            "what_it_means": "The domain contains multiple hyphens or unusual symbols, which are commonly used in phishing URLs.",
+            "how_detected": f"The domain '{domain}' contains {hyphen_count} hyphen(s) and the following unusual characters: {unusual_symbols if unusual_symbols else 'None'}.",
+            "risk": "Attackers often use extra hyphens or symbols to imitate legitimate brands (e.g., secure-paypal-login.com).",
+            "what_to_do": "Carefully verify the domain spelling. Check that the root domain matches the official website before entering sensitive information.",
+            "details": reasons
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+        "what_it_means": "The domain format appears normal with no excessive hyphens or suspicious symbols.",
+        "how_detected": f"The domain '{domain}' was analyzed for excessive hyphens and unusual characters.",
+        "risk": "No suspicious formatting patterns detected.",
+        "what_to_do": "Continue verifying other security indicators like HTTPS and site legitimacy."
+    }
 
 
 def mainQueryPage(request):
@@ -83,11 +131,13 @@ def mainQueryPage(request):
 
         https_result = check_https(urlText)
         reachability = check_reachability(urlText)
+        domain_format = check_suspicious_domain_format(urlText)
 
         scan_results = {
             "url": urlText,
             "https_result": https_result,
-            "reachability": reachability
+            "reachability": reachability,
+            "domain_format": domain_format
         }
 
         form = URLForm()
