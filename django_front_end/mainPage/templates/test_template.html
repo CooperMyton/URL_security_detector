@@ -71,12 +71,31 @@
                     <p style="color:green;">
                         Domain Format Check Passed
                     </p>
-                {% endif %}
 
                 <p><strong>What it means:</strong> {{ scan_results.domain_format.what_it_means }}</p>
                 <p><strong>How detected:</strong> {{ scan_results.domain_format.how_detected }}</p>
                 <p><strong>Risk:</strong> {{ scan_results.domain_format.risk }}</p>
                 <p><strong>What you should do:</strong> {{ scan_results.domain_format.what_to_do }}</p>
+                {% endif %}
+
+                <h3>Shortened URL Analysis</h3>
+
+                {% if scan_results.shortened_url.vulnerable %}
+                    <p style="color:red;">
+                        <strong>Vulnerability:</strong>
+                        {{ scan_results.shortened_url.issue }}
+                    </p>
+                {% else %}
+                    <p style="color:green;">
+                        Shortened URL Check Passed
+                    </p>
+                {% endif %}
+
+                <p><strong>What it means:</strong> {{ scan_results.shortened_url.what_it_means }}</p>
+                <p><strong>How detected:</strong> {{ scan_results.shortened_url.how_detected }}</p>
+                <p><strong>Risk:</strong> {{ scan_results.shortened_url.risk }}</p>
+                <p><strong>What you should do:</strong> {{ scan_results.shortened_url.what_to_do }}</p>
+
             {% endif %}
 
         </p>

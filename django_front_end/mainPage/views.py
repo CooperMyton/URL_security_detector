@@ -109,6 +109,51 @@ def check_suspicious_domain_format(url):
         "what_to_do": "Continue verifying other security indicators like HTTPS and site legitimacy."
     }
 
+def check_shortened_url(url):
+    """
+    Checks if the URL uses a known URL shortening service.
+    """
+
+    parsed = urlparse(url)
+    domain = parsed.netloc.lower()
+
+    # Remove port if present
+    domain = domain.split(":")[0]
+
+    # Common URL shortening services
+    shortening_services = [
+        "bit.ly",
+        "tinyurl.com",
+        "t.co",
+        "goo.gl",
+        "ow.ly",
+        "buff.ly",
+        "adf.ly",
+        "is.gd",
+        "cutt.ly",
+        "rebrand.ly",
+        "shorturl.at"
+    ]
+
+    if domain in shortening_services:
+        return {
+            "vulnerable": True,
+            "issue": "Shortened URL Detected",
+            "what_it_means": "This URL uses a shortening service, which hides the true destination.",
+            "how_detected": f"The domain '{domain}' matches a known URL shortening service.",
+            "risk": "Shortened URLs conceal the final destination and are frequently used in phishing or malware campaigns.",
+            "what_to_do": "Do not click shortened links from unknown sources. Use a URL expander service to preview the destination before visiting.",
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+        "what_it_means": "The URL does not use a known shortening service.",
+        "how_detected": f"The domain '{domain}' was checked against a list of known URL shorteners.",
+        "risk": "No shortened URL behavior detected.",
+        "what_to_do": "Continue verifying other security indicators."
+    }
+
 
 def mainQueryPage(request):
     template = loader.get_template("test_template.html")
@@ -132,12 +177,15 @@ def mainQueryPage(request):
         https_result = check_https(urlText)
         reachability = check_reachability(urlText)
         domain_format = check_suspicious_domain_format(urlText)
+        shortened_url = check_shortened_url(urlText)
+
 
         scan_results = {
             "url": urlText,
             "https_result": https_result,
             "reachability": reachability,
-            "domain_format": domain_format
+            "domain_format": domain_format,
+            "shortened_url": shortened_url
         }
 
         form = URLForm()
