@@ -27,22 +27,38 @@
                         <strong>Vulnerability:</strong> 
                         {{ scan_results.https_result.issue }}
                     </p>
-                    <p>{{ scan_results.https_result.explanation }}</p>
+                    <p><strong>What it means:</strong> {{ scan_results.https_result.what_it_means }}</p>
+                    <p><strong>How to detect:</strong> {{ scan_results.https_result.how_detected }}</p>
+                    <p><strong>Risk:</strong> {{ scan_results.https_result.risk }}</p>
+                    <p><strong>What you should do:</strong> {{ scan_results.https_result.what_to_do }}</p>
+
                 {% else %}
                     <p style="color:green;">
-                        HTTPS Check Passed
+                        HTTPS Check Passed, your data is secure
                     </p>
-                    <p>{{ scan_results.https_result.explanation }}</p>
+                    <p><strong>What it means:</strong> {{ scan_results.https_result.what_it_means }}</p>
+                    <p><strong>How to detect:</strong> {{ scan_results.https_result.how_detected }}</p>
+                    <p><strong>Risk:</strong> {{ scan_results.https_result.risk }}</p>
+                    <p><strong>What you should do:</strong> {{ scan_results.https_result.what_to_do }}</p>
                 {% endif %}
 
                 <h3>Reachability</h3>
                 {% if scan_results.reachability.reachable %}
-                    <p>Site Reachable (Status Code: {{ scan_results.reachability.status_code }})</p>
+                    <p style="color:green;"> Site Reachable (Status Code: {{ scan_results.reachability.status_code }})</p>
+                    <p><strong>What it means:</strong> {{ scan_results.reachability.what_it_means }}</p>
+                    <p><strong>How to detect:</strong> {{ scan_results.reachability.how_detected }}</p>
+                    <p><strong>Risk:</strong> {{ scan_results.reachability.risk }}</p>
+                    <p><strong>What you should do:</strong> {{ scan_results.reachability.what_to_do }}</p>
+
                 {% else %}
                     <p style="color:red;">
                         Site Not Reachable
                     </p>
                     <p>Error: {{ scan_results.reachability.error }}</p>
+                    <p><strong>What it means:</strong> {{ scan_results.reachability.what_it_means }}</p>
+                    <p><strong>How to detect:</strong> {{ scan_results.reachability.how_detected }}</p>
+                    <p><strong>Risk:</strong> {{ scan_results.reachability.risk }}</p>
+                    <p><strong>What you should do:</strong> {{ scan_results.reachability.what_to_do }}</p>
                 {% endif %}
             {% endif %}
 

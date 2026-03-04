@@ -13,14 +13,20 @@ def check_https(url):
     if parsed.scheme != "https":
         return {
             "vulnerable": True,
-            "issue": "Insecure protocol",
-            "explanation": "This URL does not use HTTPS, meaning data is not encrypted."
+            "issue": "Insecure Protocol (HTTP)",
+            "what_it_means": "This site uses HTTP instead of HTTPS. Data sent to and from the site is not encrypted.",
+            "how_detected": "The URL scheme was checked and does not use 'https://'.",
+            "risk": "Attackers on the same network could intercept or modify data (man-in-the-middle attack).",
+            "what_to_do": "Avoid entering passwords or sensitive data. Try manually switching to https:// if available."
         }
 
     return {
         "vulnerable": False,
         "issue": None,
-        "explanation": "This URL uses HTTPS."
+        "what_it_means": "This site uses HTTPS, which encrypts data in transit.",
+        "how_detected": "The URL scheme was verified as 'https://'.",
+        "risk": "Data is encrypted during transmission.",
+        "what_to_do": "Always ensure sensitive websites use HTTPS."
     }
 
 
@@ -29,18 +35,32 @@ def check_reachability(url):
         response = urlopen(url, timeout=5)
         return {
             "reachable": True,
-            "status_code": response.status
+            "status_code": response.status,
+            "what_it_means": "The site responded to a connection request.",
+            "how_detected": "A request was sent and the server returned a valid HTTP response.",
+            "risk": "Reachability alone does not guarantee safety.",
+            "what_to_do": "Still verify HTTPS and domain legitimacy."
         }
     except HTTPError as e:
         return {
             "reachable": True,
-            "status_code": e.code
+            "status_code": e.code,
+            "what_it_means": "The server responded but returned an error status.",
+            "how_detected": "The server returned an HTTP error code.",
+            "risk": "Some error codes (like 403 or 404) may indicate restricted or missing pages.",
+            "what_to_do": "Check if the URL is typed correctly."
         }
+
     except URLError as e:
         return {
             "reachable": False,
-            "error": str(e.reason)
+            "error": str(e.reason),
+            "what_it_means": "The site could not be reached.",
+            "how_detected": "The connection attempt failed.",
+            "risk": "The domain may not exist, may be offline, or could be suspicious.",
+            "what_to_do": "Avoid interacting with unreachable or unknown domains."
         }
+
 
 def mainQueryPage(request):
     template = loader.get_template("test_template.html")
