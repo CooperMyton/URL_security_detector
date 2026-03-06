@@ -17,6 +17,7 @@
             <input type="submit" value="Submit">
         </form>
         <p>Dynamic scan results:
+            
 
             {% if scan_results.url %}
                 <hr>
@@ -95,6 +96,43 @@
                 <p><strong>How detected:</strong> {{ scan_results.shortened_url.how_detected }}</p>
                 <p><strong>Risk:</strong> {{ scan_results.shortened_url.risk }}</p>
                 <p><strong>What you should do:</strong> {{ scan_results.shortened_url.what_to_do }}</p>
+
+                <h3>Domain Impersonation Analysis</h3>
+
+                {% if scan_results.domain_impersonation.vulnerable %}
+                    <p style="color:red;">
+                        <strong>Vulnerability:</strong>
+                        {{ scan_results.domain_impersonation.issue }}
+                    </p>
+
+                    <p><strong>Impersonated Brand:</strong>
+                        {{ scan_results.domain_impersonation.matched_brand }}
+                    </p>
+
+                {% else %}
+                    <p style="color:green;">
+                        Domain Impersonation Check Passed
+                    </p>
+                {% endif %}
+
+                <p><strong>What it means:</strong>
+                {{ scan_results.domain_impersonation.what_it_means }}</p>
+
+                <p><strong>How detected:</strong>
+                {{ scan_results.domain_impersonation.how_detected }}</p>
+
+                <p><strong>Risk:</strong>
+                {{ scan_results.domain_impersonation.risk }}</p>
+
+                <p><strong>What you should do:</strong>
+                {{ scan_results.domain_impersonation.what_to_do }}</p>
+
+                <p><strong>Domain Visualization:</strong></p>
+
+                <p style="font-family: monospace; font-size:18px;">
+                {{ scan_results.domain_impersonation.visual_domain }}
+                </p>
+
 
             {% endif %}
 

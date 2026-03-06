@@ -5,7 +5,31 @@ from .forms import URLForm
 from urllib.parse import urlparse
 from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
+from difflib import SequenceMatcher
 import re
+
+
+# Common brands frequently targeted in phishing
+COMMON_BRANDS = [
+    "google.com",
+    "amazon.com",
+    "paypal.com",
+    "apple.com",
+    "microsoft.com",
+    "facebook.com",
+    "instagram.com",
+    "netflix.com",
+    "bankofamerica.com",
+    "chase.com",
+    "venmo.com",
+    "youtube.com"
+]
+
+#return similarity of 2 strings
+def similarity(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
+
 
 #Basic url checker
 def check_https(url):
@@ -153,6 +177,65 @@ def check_shortened_url(url):
         "risk": "No shortened URL behavior detected.",
         "what_to_do": "Continue verifying other security indicators."
     }
+    
+def check_domain_impersonation(url):
+    """
+    Detects domains that attempt to impersonate well-known brands.
+    """
+
+    parsed = urlparse(url)
+    domain = parsed.netloc.lower()
+
+    # Remove port if present
+    domain = domain.split(":")[0]
+    
+    # remove www prefix
+    if domain.startswith("www."):
+        domain = domain[4:]
+        
+    # extract root domain name (before the TLD)
+    root_domain = domain.split(".")[0]
+
+
+    best_match = None
+    highest_score = 0
+
+    for brand in COMMON_BRANDS:
+
+        brand_root = brand.split(".")[0]
+
+        score = similarity(root_domain, brand_root)
+        if score > highest_score:
+            highest_score = score
+            best_match = brand
+
+    suspicious_chars = re.findall(r"[0-9]", root_domain)
+
+    # threshold for similarity detection
+    if highest_score > 0.75 and root_domain != best_match.split(".")[0]:
+
+
+        return {
+            "vulnerable": True,
+            "issue": "Possible Brand Impersonation",
+            "what_it_means": "This domain looks similar to a well-known brand and may be attempting to impersonate it.",
+            "how_detected": f"The domain '{root_domain}' is similar to '{best_match}' with a similarity score of {round(highest_score,2)}.",
+            "risk": "Attackers often create domains that look nearly identical to trusted brands to trick users into entering credentials or personal information.",
+            "what_to_do": "Carefully inspect the spelling of the domain. Visit the official website directly instead of clicking links from emails or messages.",
+            "visual_domain": " ".join(domain),
+            "matched_brand": best_match
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+        "what_it_means": "No strong similarity to commonly impersonated brands was detected.",
+        "how_detected": f"The domain '{domain}' was compared against a list of commonly impersonated brands.",
+        "risk": "No brand impersonation patterns detected.",
+        "what_to_do": "Continue verifying other indicators such as HTTPS and suspicious keywords.",
+        "visual_domain": " ".join(domain)
+    }
+
 
 
 def mainQueryPage(request):
@@ -178,6 +261,7 @@ def mainQueryPage(request):
         reachability = check_reachability(urlText)
         domain_format = check_suspicious_domain_format(urlText)
         shortened_url = check_shortened_url(urlText)
+        domain_impersonation = check_domain_impersonation(urlText)
 
 
         scan_results = {
@@ -185,7 +269,8 @@ def mainQueryPage(request):
             "https_result": https_result,
             "reachability": reachability,
             "domain_format": domain_format,
-            "shortened_url": shortened_url
+            "shortened_url": shortened_url,
+            "domain_impersonation": domain_impersonation
         }
 
         form = URLForm()
