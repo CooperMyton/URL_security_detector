@@ -16,7 +16,7 @@
             {{ url_form }}
             <input type="submit" value="Submit">
         </form>
-        <p>Dynamic scan results:
+        <p>Dynamic scan results:</p>
             
 
             {% if scan_results.url %}
@@ -132,6 +132,38 @@
                 <p style="font-family: monospace; font-size:18px;">
                 {{ scan_results.domain_impersonation.visual_domain }}
                 </p>
+
+                <h3>IP Address Domain Analysis</h3>
+
+                {% if scan_results.ip_domain.vulnerable %}
+                    <p style="color:red;">
+                        <strong>Vulnerability:</strong>
+                        {{ scan_results.ip_domain.issue }}
+                    </p>
+                {% else %}
+                    <p style="color:green;">
+                        IP Address Domain Check Passed
+                    </p>
+                {% endif %}
+
+                <p><strong>What it means:</strong>
+                {{ scan_results.ip_domain.what_it_means }}</p>
+
+                <p><strong>How detected:</strong>
+                {{ scan_results.ip_domain.how_detected }}</p>
+
+                <p><strong>Risk:</strong>
+                {{ scan_results.ip_domain.risk }}</p>
+
+                <p><strong>What you should do:</strong>
+                {{ scan_results.ip_domain.what_to_do }}</p>
+
+                <p><strong>Domain Visualization:</strong></p>
+
+                <p style="font-family: monospace; font-size:18px;">
+                {{ scan_results.ip_domain.visual_domain }}
+                </p>
+
 
 
             {% endif %}

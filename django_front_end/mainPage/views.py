@@ -237,6 +237,43 @@ def check_domain_impersonation(url):
     }
 
 
+def check_ip_domain(url):
+    """
+    Detects URLs that use an IP address instead of a domain name.
+    """
+
+    parsed = urlparse(url)
+    domain = parsed.netloc
+
+    # remove port if present
+    domain = domain.split(":")[0]
+
+    ip_pattern = r"^\d{1,3}(\.\d{1,3}){3}$"
+
+    if re.match(ip_pattern, domain):
+
+        return {
+            "vulnerable": True,
+            "issue": "IP Address Used Instead of Domain",
+            "what_it_means": "This URL uses a numeric IP address instead of a recognizable domain name.",
+            "how_detected": f"The domain '{domain}' matches the pattern of an IPv4 address.",
+            "risk": "Attackers sometimes use IP addresses to hide the true identity of a website. This can make phishing pages harder to recognize because users cannot see a familiar brand name.",
+            "what_to_do": "Avoid entering sensitive information on websites that use raw IP addresses. If you believe the site may be legitimate, try searching for the official domain name instead.",
+            "visual_domain": " ".join(domain)
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+        "what_it_means": "The URL does not use a raw IP address as its domain.",
+        "how_detected": f"The domain '{domain}' was checked to see if it matches an IP address pattern.",
+        "risk": "No IP-based domain pattern detected.",
+        "what_to_do": "Continue checking other indicators such as HTTPS, suspicious keywords, and shortened URLs.",
+        "visual_domain": " ".join(domain)
+    }
+
+
+
 
 def mainQueryPage(request):
     template = loader.get_template("test_template.html")
@@ -262,6 +299,7 @@ def mainQueryPage(request):
         domain_format = check_suspicious_domain_format(urlText)
         shortened_url = check_shortened_url(urlText)
         domain_impersonation = check_domain_impersonation(urlText)
+        ip_domain = check_ip_domain(urlText)
 
 
         scan_results = {
@@ -270,7 +308,8 @@ def mainQueryPage(request):
             "reachability": reachability,
             "domain_format": domain_format,
             "shortened_url": shortened_url,
-            "domain_impersonation": domain_impersonation
+            "domain_impersonation": domain_impersonation,
+            "ip_domain": ip_domain
         }
 
         form = URLForm()
