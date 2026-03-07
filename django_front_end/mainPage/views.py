@@ -271,6 +271,67 @@ def check_ip_domain(url):
         "what_to_do": "Continue checking other indicators such as HTTPS, suspicious keywords, and shortened URLs.",
         "visual_domain": " ".join(domain)
     }
+    
+
+def check_suspicious_keywords(url):
+    """
+    Detects phishing-related keywords commonly used in malicious URLs.
+    """
+
+    suspicious_keywords = [
+        "login",
+        "verify",
+        "update",
+        "secure",
+        "account",
+        "bank",
+        "signin",
+        "password",
+        "confirm"
+    ]
+
+    parsed = urlparse(url)
+    full_url = url.lower()
+
+    matched_keywords = []
+
+    for keyword in suspicious_keywords:
+        if keyword in full_url:
+            matched_keywords.append(keyword)
+
+    if matched_keywords:
+
+        return {
+            "vulnerable": True,
+            "issue": "Suspicious Keywords Detected in URL",
+
+            "what_it_means": "The URL contains words that are commonly used in phishing attacks to pressure users into entering personal or financial information.",
+
+            "how_detected": f"The following suspicious keywords were found in the URL: {', '.join(matched_keywords)}.",
+
+            "risk": "Attackers frequently use words like 'login', 'verify', or 'secure' to trick users into believing they must urgently confirm account details. This can lead to stolen passwords or financial information.",
+
+            "what_to_do": "Before clicking links that ask you to login or verify your account, visit the official website directly by typing the domain into your browser instead of following the link.",
+
+            "visual_domain": " ".join(url)
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+
+        "what_it_means": "No common phishing-related keywords were found in the URL.",
+
+        "how_detected": "The URL was scanned for common phishing words such as login, verify, update, secure, and account.",
+
+        "risk": "No suspicious keywords were detected.",
+
+        "what_to_do": "Even if no suspicious keywords appear, users should still verify the domain name and ensure the site is legitimate.",
+
+        "visual_domain": " ".join(url)
+    }
+
+
 
 
 
@@ -300,6 +361,7 @@ def mainQueryPage(request):
         shortened_url = check_shortened_url(urlText)
         domain_impersonation = check_domain_impersonation(urlText)
         ip_domain = check_ip_domain(urlText)
+        suspicious_keywords = check_suspicious_keywords(urlText)
 
 
         scan_results = {
@@ -309,7 +371,8 @@ def mainQueryPage(request):
             "domain_format": domain_format,
             "shortened_url": shortened_url,
             "domain_impersonation": domain_impersonation,
-            "ip_domain": ip_domain
+            "ip_domain": ip_domain,
+            "suspicious_keywords": suspicious_keywords
         }
 
         form = URLForm()
