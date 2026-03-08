@@ -7,6 +7,7 @@ from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 from difflib import SequenceMatcher
 import re
+import os
 
 
 # Common brands frequently targeted in phishing
@@ -463,6 +464,71 @@ def check_subdomains(url):
     }
 
 
+def load_malicious_domains():
+    """
+    Loads the malicious domain list from file.
+    """
+
+    file_path = os.path.join(os.path.dirname(__file__), "resources\malicious_domains_polska_3-8-2026.txt")
+
+    domains = set()
+
+    with open(file_path, "r") as f:
+        for line in f:
+            domain = line.strip().lower()
+            if domain:
+                domains.add(domain)
+
+    return domains
+
+
+MALICIOUS_DOMAINS = load_malicious_domains()
+
+
+def check_known_malicious_domain(url):
+    """
+    Checks whether a domain appears in the Polska malicious domain list.
+    """
+
+    parsed = urlparse(url)
+    domain = parsed.netloc.lower()
+
+    domain = domain.split(":")[0]
+
+    if domain in MALICIOUS_DOMAINS:
+
+        return {
+            "vulnerable": True,
+            "issue": "Domain Found in Known Malicious Domain List",
+
+            "what_it_means": "This domain appears in a known malicious domain database. Security researchers and organizations maintain these lists to track domains that have been associated with phishing, scams, malware distribution, or other cyber threats.",
+
+            "how_detected": f"The domain '{domain}' matched an entry in the Polska malicious domain list.",
+
+            "risk": "Domains that appear in threat intelligence lists have previously been reported for malicious activity. Visiting these sites could expose users to phishing attacks, malware downloads, or credential theft.",
+
+            "what_to_do": "Do not enter personal or financial information on this website. It is safest to avoid visiting domains that appear in known malicious domain lists.",
+
+            "visual_domain": " ".join(domain)
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+
+        "what_it_means": "The domain was not found in the known malicious domain list used by this scanner.",
+
+        "how_detected": f"The domain '{domain}' was compared against entries in the Polska malicious domain list.",
+
+        "risk": "Not appearing in a malicious domain list does not guarantee that a site is safe. New malicious domains appear frequently and may not yet be reported.",
+
+        "what_to_do": "Continue reviewing other security indicators such as HTTPS, suspicious keywords, and domain structure.",
+
+        "visual_domain": " ".join(domain)
+    }
+
+
+
 
 def mainQueryPage(request):
     template = loader.get_template("test_template.html")
@@ -492,6 +558,7 @@ def mainQueryPage(request):
         suspicious_keywords = check_suspicious_keywords(urlText)
         tld_analysis = check_tld(urlText)
         subdomain_analysis = check_subdomains(urlText)
+        malicious_domain_list = check_known_malicious_domain(urlText)
 
 
         scan_results = {
@@ -504,7 +571,8 @@ def mainQueryPage(request):
             "ip_domain": ip_domain,
             "suspicious_keywords": suspicious_keywords,
             "tld_analysis": tld_analysis,
-            "subdomain_analysis": subdomain_analysis
+            "subdomain_analysis": subdomain_analysis,
+            "malicious_domain_list": malicious_domain_list
         }
 
         form = URLForm()

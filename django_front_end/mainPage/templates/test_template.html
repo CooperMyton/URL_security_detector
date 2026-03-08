@@ -234,6 +234,34 @@
                 <p><strong>What you should do:</strong>
                 {{ scan_results.subdomain_analysis.what_to_do }}</p>
 
+                <h3>Known Malicious Domain Analysis</h3>
+
+                {% if scan_results.malicious_domain_list.vulnerable %}
+                    <p style="color:red;">
+                        <strong>Vulnerability:</strong>
+                        {{ scan_results.malicious_domain_list.issue }}
+                    </p>
+                {% else %}
+                    <p style="color:green;">
+                        Known Malicious Domain Check Passed
+                    </p>
+                {% endif %}
+
+                <p><strong>What it means:</strong>
+                {{ scan_results.malicious_domain_list.what_it_means }}</p>
+
+                <p><strong>How detected:</strong>
+                {{ scan_results.malicious_domain_list.how_detected }}</p>
+
+                <p><strong>Risk:</strong>
+                {{ scan_results.malicious_domain_list.risk }}</p>
+
+                <p><strong>What you should do:</strong>
+                {{ scan_results.malicious_domain_list.what_to_do }}</p>
+
+
+
+
             {% endif %}
 
         </p>
