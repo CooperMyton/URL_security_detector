@@ -330,6 +330,70 @@ def check_suspicious_keywords(url):
 
         "visual_domain": " ".join(url)
     }
+    
+
+def check_tld(url):
+    """
+    Detects suspicious Top Level Domains (TLDs) that are commonly abused in phishing attacks.
+    """
+
+    suspicious_tlds = [
+        "xyz",
+        "top",
+        "club",
+        "online",
+        "site",
+        "info",
+        "cc",
+        "biz",
+        "ru",
+        "tk"
+    ]
+
+    parsed = urlparse(url)
+    domain = parsed.netloc
+
+    # remove port if present
+    domain = domain.split(":")[0]
+
+    # extract TLD
+    if "." in domain:
+        tld = domain.split(".")[-1].lower()
+    else:
+        tld = ""
+
+    if tld in suspicious_tlds:
+
+        return {
+            "vulnerable": True,
+            "issue": "Suspicious Top Level Domain Detected",
+
+            "what_it_means": f"The website uses the .{tld} top level domain, which is commonly used in phishing attacks.",
+
+            "how_detected": f"The domain '{domain}' was analyzed and the TLD '.{tld}' matched a list of commonly abused domains.",
+
+            "risk": "Phishing websites frequently register inexpensive or less regulated domain extensions. Attackers use these domains to create fake login pages that imitate legitimate services.",
+
+            "what_to_do": "Be cautious when visiting websites that use unfamiliar domain extensions. If the site claims to represent a major company, verify that you are using their official domain.",
+
+            "visual_domain": " ".join(domain)
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+
+        "what_it_means": f"The website uses the .{tld} top level domain, which is commonly used by legitimate organizations.",
+
+        "how_detected": f"The domain '{domain}' was checked and its TLD '.{tld}' did not match commonly abused phishing domain extensions.",
+
+        "risk": "No suspicious top level domain was detected.",
+
+        "what_to_do": "Even trusted domain extensions can still host malicious sites, so always check the full domain name carefully.",
+
+        "visual_domain": " ".join(domain)
+    }
+
 
 
 
@@ -362,6 +426,7 @@ def mainQueryPage(request):
         domain_impersonation = check_domain_impersonation(urlText)
         ip_domain = check_ip_domain(urlText)
         suspicious_keywords = check_suspicious_keywords(urlText)
+        tld_analysis = check_tld(urlText)
 
 
         scan_results = {
@@ -372,7 +437,8 @@ def mainQueryPage(request):
             "shortened_url": shortened_url,
             "domain_impersonation": domain_impersonation,
             "ip_domain": ip_domain,
-            "suspicious_keywords": suspicious_keywords
+            "suspicious_keywords": suspicious_keywords,
+            "tld_analysis": tld_analysis
         }
 
         form = URLForm()

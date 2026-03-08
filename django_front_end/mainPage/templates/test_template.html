@@ -158,11 +158,6 @@
                 <p><strong>What you should do:</strong>
                 {{ scan_results.ip_domain.what_to_do }}</p>
 
-                <p><strong>Domain Visualization:</strong></p>
-
-                <p style="font-family: monospace; font-size:18px;">
-                {{ scan_results.ip_domain.visual_domain }}
-                </p>
 
                 <h3>Suspicious Keyword Analysis</h3>
 
@@ -189,11 +184,30 @@
                 <p><strong>What you should do:</strong>
                 {{ scan_results.suspicious_keywords.what_to_do }}</p>
 
-                <p><strong>Domain Visualization:</strong></p>
+                <h3>Top Level Domain Analysis</h3>
 
-                <p style="font-family: monospace; font-size:18px;">
-                {{ scan_results.suspicious_keywords.visual_domain }}
-                </p>
+                {% if scan_results.tld_analysis.vulnerable %}
+                    <p style="color:red;">
+                        <strong>Vulnerability:</strong>
+                        {{ scan_results.tld_analysis.issue }}
+                    </p>
+                {% else %}
+                    <p style="color:green;">
+                        Top Level Domain Check Passed
+                    </p>
+                {% endif %}
+
+                <p><strong>What it means:</strong>
+                {{ scan_results.tld_analysis.what_it_means }}</p>
+
+                <p><strong>How detected:</strong>
+                {{ scan_results.tld_analysis.how_detected }}</p>
+
+                <p><strong>Risk:</strong>
+                {{ scan_results.tld_analysis.risk }}</p>
+
+                <p><strong>What you should do:</strong>
+                {{ scan_results.tld_analysis.what_to_do }}</p>
 
 
 
