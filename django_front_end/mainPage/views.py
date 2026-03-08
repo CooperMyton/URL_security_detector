@@ -393,10 +393,74 @@ def check_tld(url):
 
         "visual_domain": " ".join(domain)
     }
+    
 
+def check_subdomains(url):
+    """
+    Detects suspicious subdomain usage commonly seen in phishing URLs.
+    """
 
+    suspicious_keywords = [
+        "login",
+        "secure",
+        "verify",
+        "account",
+        "update",
+        "bank",
+        "signin"
+    ]
 
+    parsed = urlparse(url)
+    domain = parsed.netloc
 
+    # remove port if present
+    domain = domain.split(":")[0]
+
+    parts = domain.split(".")
+
+    subdomains = []
+
+    if len(parts) > 2:
+        subdomains = parts[:-2]
+
+    suspicious_found = []
+
+    for sub in subdomains:
+        for keyword in suspicious_keywords:
+            if keyword in sub.lower():
+                suspicious_found.append(sub)
+
+    if len(subdomains) > 3 or suspicious_found:
+
+        return {
+            "vulnerable": True,
+            "issue": "Suspicious Subdomain Structure Detected",
+
+            "what_it_means": "The URL contains multiple or misleading subdomains that may be used to disguise the true website address.",
+
+            "how_detected": f"The domain '{domain}' contains {len(subdomains)} subdomains. Suspicious subdomains found: {', '.join(suspicious_found) if suspicious_found else 'None'}",
+
+            "risk": "Attackers often create long chains of subdomains to trick users into believing they are visiting a trusted site. For example, a phishing URL might start with 'paypal.login.secure...' even though the actual domain belongs to an attacker.",
+
+            "what_to_do": "Always check the last two parts of a domain name (for example example.com). This is the real website. Anything before it may just be a subdomain.",
+
+            "visual_domain": " ".join(domain)
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+
+        "what_it_means": "The domain structure does not contain an excessive number of subdomains.",
+
+        "how_detected": f"The domain '{domain}' was analyzed and contains {len(subdomains)} subdomains.",
+
+        "risk": "No suspicious subdomain patterns were detected.",
+
+        "what_to_do": "Continue verifying other security indicators such as HTTPS, domain spelling, and suspicious keywords.",
+
+        "visual_domain": " ".join(domain)
+    }
 
 
 
@@ -427,6 +491,7 @@ def mainQueryPage(request):
         ip_domain = check_ip_domain(urlText)
         suspicious_keywords = check_suspicious_keywords(urlText)
         tld_analysis = check_tld(urlText)
+        subdomain_analysis = check_subdomains(urlText)
 
 
         scan_results = {
@@ -438,7 +503,8 @@ def mainQueryPage(request):
             "domain_impersonation": domain_impersonation,
             "ip_domain": ip_domain,
             "suspicious_keywords": suspicious_keywords,
-            "tld_analysis": tld_analysis
+            "tld_analysis": tld_analysis,
+            "subdomain_analysis": subdomain_analysis
         }
 
         form = URLForm()

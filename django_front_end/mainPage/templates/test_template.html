@@ -209,8 +209,30 @@
                 <p><strong>What you should do:</strong>
                 {{ scan_results.tld_analysis.what_to_do }}</p>
 
+                <h3>Subdomain Analysis</h3>
 
+                {% if scan_results.subdomain_analysis.vulnerable %}
+                    <p style="color:red;">
+                        <strong>Vulnerability:</strong>
+                        {{ scan_results.subdomain_analysis.issue }}
+                    </p>
+                {% else %}
+                    <p style="color:green;">
+                        Subdomain Check Passed
+                    </p>
+                {% endif %}
 
+                <p><strong>What it means:</strong>
+                {{ scan_results.subdomain_analysis.what_it_means }}</p>
+
+                <p><strong>How detected:</strong>
+                {{ scan_results.subdomain_analysis.how_detected }}</p>
+
+                <p><strong>Risk:</strong>
+                {{ scan_results.subdomain_analysis.risk }}</p>
+
+                <p><strong>What you should do:</strong>
+                {{ scan_results.subdomain_analysis.what_to_do }}</p>
 
             {% endif %}
 
