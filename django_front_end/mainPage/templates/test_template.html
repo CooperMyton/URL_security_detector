@@ -119,7 +119,31 @@
 
                 {% if scan_results.url %}
                     <div class="responseBox">
-                        <h2>Results for: {{ scan_results.url }}</h2>
+                        <h2>Results for: {{ scan_results.url }} <br>
+                            For more information on these topics, visit our resources page
+                        </h2>
+
+                        <h3>Overall Phishing Risk Assessment</h3>
+
+                        <p style="color:{{ scan_results.risk_score.color }}; font-size:20px;">
+                            <strong>Risk Level: {{ scan_results.risk_score.level }}</strong>
+                        </p>
+
+                        <p><strong>Warnings Detected:</strong>
+                        {{ scan_results.risk_score.warnings }}</p>
+
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.risk_score.what_it_means }}</p>
+
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.risk_score.how_detected }}</p>
+
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.risk_score.risk }}</p>
+
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.risk_score.what_to_do }}</p>
+
 
                         {% if scan_results.https_result.vulnerable %}
                             <p style="color:red;">
@@ -358,6 +382,95 @@
 
                         <p><strong>What you should do:</strong>
                         {{ scan_results.malicious_domain_list.what_to_do }}</p>
+                    
+
+                        <h3>URL Path Analysis</h3>
+
+                        {% if scan_results.path_analysis.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.path_analysis.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                URL Path Check Passed
+                            </p>
+                        {% endif %}
+
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.path_analysis.what_it_means }}</p>
+
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.path_analysis.how_detected }}</p>
+
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.path_analysis.risk }}</p>
+
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.path_analysis.what_to_do }}</p>
+
+                        <h3>Query String Analysis</h3>
+
+                        {% if scan_results.query_analysis.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.query_analysis.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                Query String Check Passed
+                            </p>
+                        {% endif %}
+
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.query_analysis.what_it_means }}</p>
+
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.query_analysis.how_detected }}</p>
+
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.query_analysis.risk }}</p>
+
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.query_analysis.what_to_do }}</p>
+
+                        <p><strong>Query Visualization:</strong></p>
+
+                        <p style="font-family: monospace; font-size:18px;">
+                        {{ scan_results.query_analysis.visual_domain }}
+                        </p>
+
+                        <h3>Anchor Analysis</h3>
+
+                        {% if scan_results.anchor_analysis.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.anchor_analysis.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                Anchor Check Passed
+                            </p>
+                        {% endif %}
+
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.anchor_analysis.what_it_means }}</p>
+
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.anchor_analysis.how_detected }}</p>
+
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.anchor_analysis.risk }}</p>
+
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.anchor_analysis.what_to_do }}</p>
+
+                        <p><strong>Anchor Visualization:</strong></p>
+
+                        <p style="font-family: monospace; font-size:18px;">
+                        {{ scan_results.anchor_analysis.visual_domain }}
+                        </p>
+
 
 
                     </div>

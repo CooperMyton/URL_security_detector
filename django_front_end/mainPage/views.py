@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .forms import URLForm
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 from difflib import SequenceMatcher
@@ -527,6 +527,241 @@ def check_known_malicious_domain(url):
         "visual_domain": " ".join(domain)
     }
 
+def check_url_path(url):
+    """
+    Analyzes the URL path for suspicious patterns commonly used in phishing URLs.
+    """
+
+    suspicious_keywords = [
+        "login",
+        "verify",
+        "secure",
+        "account",
+        "update",
+        "bank",
+        "password",
+        "confirm"
+    ]
+
+    parsed = urlparse(url)
+    path = parsed.path.lower()
+
+    matched_keywords = []
+
+    for keyword in suspicious_keywords:
+        if keyword in path:
+            matched_keywords.append(keyword)
+
+    folder_count = path.count("/")
+
+    if matched_keywords or folder_count > 5 or len(path) > 60:
+
+        return {
+            "vulnerable": True,
+            "issue": "Suspicious URL Path Detected",
+
+            "what_it_means": "The path portion of the URL contains patterns commonly used in phishing links.",
+
+            "how_detected": f"The path '{path}' contains {folder_count} folders and the following suspicious keywords: {', '.join(matched_keywords) if matched_keywords else 'None'}",
+
+            "risk": "Attackers often include words like 'login', 'secure', or 'verify' in the URL path to trick users into thinking the link leads to a legitimate login page.",
+
+            "what_to_do": "Always verify the domain name before trusting the path of a URL. Even if the path looks legitimate, the domain itself may belong to an attacker.",
+
+            "visual_domain": " ".join(path) if path else "(no path present)"
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+
+        "what_it_means": "The URL path does not contain suspicious patterns.",
+
+        "how_detected": f"The path '{path}' was analyzed for suspicious keywords and excessive folder depth.",
+
+        "risk": "No suspicious patterns were detected in the URL path.",
+
+        "what_to_do": "Continue reviewing other parts of the URL such as the domain name and query parameters.",
+
+        "visual_domain": " ".join(path) if path else "(no path present)"
+    }
+
+
+def check_query_string(url):
+    """
+    Analyzes the query string portion of a URL for suspicious patterns.
+    """
+
+    suspicious_keywords = [
+        "login",
+        "verify",
+        "secure",
+        "account",
+        "update",
+        "bank",
+        "password",
+        "confirm",
+        "session",
+        "token"
+    ]
+
+    parsed = urlparse(url)
+    query = parsed.query.lower()
+
+    params = parse_qs(query)
+
+    matched_keywords = []
+
+    for keyword in suspicious_keywords:
+        if keyword in query:
+            matched_keywords.append(keyword)
+
+    param_count = len(params)
+    query_length = len(query)
+
+    if matched_keywords or param_count > 5 or query_length > 80:
+
+        return {
+            "vulnerable": True,
+            "issue": "Suspicious Query String Detected",
+
+            "what_it_means": "The query string portion of the URL contains patterns commonly associated with phishing or tracking links.",
+
+            "how_detected": f"The query string '{query}' contains {param_count} parameters and the following suspicious keywords: {', '.join(matched_keywords) if matched_keywords else 'None'}",
+
+            "risk": "Phishing URLs often include parameters such as 'verify', 'account', or 'session' to make links appear legitimate or to pass stolen credentials to attackers.",
+
+            "what_to_do": "Be cautious when clicking links with long or complex query parameters. If the link claims to require login or verification, navigate to the website directly instead of following the link.",
+
+            "visual_domain": " ".join(query) if query else "(no query string present)"
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+
+        "what_it_means": "The URL query string does not contain suspicious patterns.",
+
+        "how_detected": f"The query string '{query}' was analyzed for suspicious keywords and excessive parameters.",
+
+        "risk": "No suspicious query string patterns were detected.",
+
+        "what_to_do": "Even normal-looking parameters can sometimes be used for tracking or redirects, so always verify the domain name of the website.",
+
+        "visual_domain": " ".join(query) if query else "(no query string present)"
+    }
+    
+
+
+def check_anchor(url):
+    """
+    Analyzes the anchor (fragment) portion of a URL for suspicious patterns.
+    """
+
+    suspicious_keywords = [
+        "login",
+        "secure",
+        "verify",
+        "account",
+        "bank",
+        "update",
+        "password",
+        "confirm"
+    ]
+
+    parsed = urlparse(url)
+    anchor = parsed.fragment.lower()
+
+    matched_keywords = []
+
+    for keyword in suspicious_keywords:
+        if keyword in anchor:
+            matched_keywords.append(keyword)
+
+    if matched_keywords or len(anchor) > 30:
+
+        return {
+            "vulnerable": True,
+            "issue": "Suspicious URL Anchor Detected",
+
+            "what_it_means": "The anchor portion of the URL contains patterns that may attempt to make the link appear more trustworthy.",
+
+            "how_detected": f"The anchor '{anchor}' contains the following suspicious keywords: {', '.join(matched_keywords) if matched_keywords else 'None'}",
+
+            "risk": "Although anchors are processed only by the browser, attackers sometimes use them to make links look more legitimate or to mimic real website navigation.",
+
+            "what_to_do": "Users should focus on verifying the domain name of the website rather than trusting the additional text that appears after the '#' symbol.",
+
+            "visual_domain": " ".join(anchor) if anchor else "(no anchor present)"
+        }
+
+    return {
+        "vulnerable": False,
+        "issue": None,
+
+        "what_it_means": "No suspicious patterns were detected in the anchor portion of the URL.",
+
+        "how_detected": f"The anchor '{anchor}' was analyzed for suspicious keywords and unusual length.",
+
+        "risk": "No suspicious anchor patterns were detected.",
+
+        "what_to_do": "Even though anchors are generally harmless, users should still verify the domain name of the website before trusting a link.",
+
+        "visual_domain": " ".join(anchor) if anchor else "(no anchor present)"
+    }
+    
+def calculate_risk_score(scan_results):
+    """
+    Calculates an overall phishing risk score based on the number of vulnerabilities detected.
+    """
+
+    warnings = 0
+
+    checks = [
+        "https_result",
+        "domain_format",
+        "shortened_url",
+        "domain_impersonation",
+        "ip_domain",
+        "suspicious_keywords",
+        "tld_analysis",
+        "subdomain_analysis",
+        "malicious_domain_list",
+        "path_analysis",
+        "query_analysis",
+        "anchor_analysis"
+    ]
+
+    for check in checks:
+        result = scan_results.get(check)
+        if result and result.get("vulnerable"):
+            warnings += 1
+
+    if warnings >= 6:
+        level = "HIGH"
+        color = "red"
+    elif warnings >= 3:
+        level = "MEDIUM"
+        color = "orange"
+    else:
+        level = "LOW"
+        color = "green"
+
+    return {
+        "warnings": warnings,
+        "level": level,
+        "color": color,
+
+        "what_it_means": "This score summarizes how many phishing indicators were detected in the URL.",
+
+        "how_detected": f"The scanner identified {warnings} potential phishing indicators across multiple URL analysis checks.",
+
+        "risk": "A higher score indicates that multiple suspicious characteristics were found in the URL.",
+
+        "what_to_do": "If a URL shows a medium or high risk score, it is best to avoid entering personal information or credentials on that site."
+    }
+
+
 
 
 
@@ -559,6 +794,9 @@ def mainQueryPage(request):
         tld_analysis = check_tld(urlText)
         subdomain_analysis = check_subdomains(urlText)
         malicious_domain_list = check_known_malicious_domain(urlText)
+        path_analysis = check_url_path(urlText)
+        query_analysis = check_query_string(urlText)
+        anchor_analysis = check_anchor(urlText)
 
 
         scan_results = {
@@ -572,8 +810,13 @@ def mainQueryPage(request):
             "suspicious_keywords": suspicious_keywords,
             "tld_analysis": tld_analysis,
             "subdomain_analysis": subdomain_analysis,
-            "malicious_domain_list": malicious_domain_list
+            "malicious_domain_list": malicious_domain_list,
+            "path_analysis": path_analysis,
+            "query_analysis": query_analysis,
+            "anchor_analysis": anchor_analysis
         }
+        scan_results["risk_score"] = calculate_risk_score(scan_results)
+
 
         form = URLForm()
         context = {
