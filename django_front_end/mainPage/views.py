@@ -469,7 +469,7 @@ def load_malicious_domains():
     Loads the malicious domain list from file.
     """
 
-    file_path = os.path.join(os.path.dirname(__file__), "resources\malicious_domains_polska_3-8-2026.txt")
+    file_path = os.path.join(os.path.dirname(__file__), "resources/malicious_domains_polska_3-8-2026.txt")
 
     domains = set()
 

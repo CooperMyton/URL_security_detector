@@ -1,30 +1,232 @@
-<!DOCTYPE html>
 <html>
-<body>
-    <nav>
-        <a href="{% url 'mainPage' %}">URL checker</a> |
-        <a href="{% url 'resources' %}">Resources</a>
-    </nav>
 
-<h1>
-    Further reading on website security
-</h1>
-<p>
-    This is where the website security information will go, including links. Can probably just be a static page, but can add some dynamism if we like.
+    <head>
+        <meta charset="UTF-8" />
+        <title>URL Defender</title>
+        <style>
+            /* Style for body */
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background-color: #f4f6fb;  
+                color: #222222;             
+            }
 
-    This is turning out to be more like just programming in html and css, at least for the frontend, but it is what it is.
-    A URL is the address of a website, kind of like a home address for the internet. When you click a link, your browser trusts that address and takes you wherever it leads. 
-    Most of the time this is harmless, but sometimes URLs are designed to trick people. A bad URL might look like a real website you know—such as your school, bank, or email 
-    provider—but it can secretly lead to a fake page made to steal passwords or personal information. This is why URL security matters, especially for people who don’t spend 
-    much time thinking about links before clicking them.
-    Attackers often create risky URLs by copying trusted names, misspelling popular websites, adding extra words like “secure” or “login,” or hiding the real destination behind 
-    shortened links. These small changes are easy to miss, but they can make a big difference. Before clicking a link, it helps to slow down and check whether the address matches 
-    what you expect, looks correctly spelled, and starts with “https://.” If a link asks for personal information unexpectedly or feels slightly off, that’s usually a warning sign.
-    The good news is that avoiding bad URLs doesn’t require advanced technical knowledge. Simple habits like not clicking on unexpected links, typing important website addresses 
-    yourself, and using tools to check URLs before trusting them can go a long way. URLs may look like random text, but they control where you go online. Learning how to recognize 
-    safe and unsafe URLs is one of the easiest ways to protect yourself on the internet.
+            /* Top bar container */
+            .topbar {
+                background-color: #333;
+                overflow: hidden;          /* keeps content inside the bar */
+                position: fixed;           /* stick it to the top */
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1000;             /* keep it above page content */
+            }
 
+            /* Links inside the top bar */
+            .topbar a {
+                float: left;
+                color: #f2f2f2;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 16px;
+            }
 
-</p>
-</body>
+            /* Hover effect */
+            .topbar a:hover {
+                background-color: #575757;
+                color: white;
+            }
+
+            /* Highlight the active page link */
+            .topbar a.active {
+                background-color: #25eb7e98;
+                color: white;
+            }
+
+            /* Top level container for all text */
+            .content {
+            padding: 130px 20px; 
+            }
+            .left_sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 200;
+                height: 100vh;
+                background-color: lightgray;
+                padding-top: 130px;
+            }
+            .left_sidebar a {
+                display: block;
+                padding: 16px 20px;
+                font-size: 18px;
+                text-decoration: none;
+                color: green;
+            }
+            .main_reference_section {
+                margin-left: 210px;
+                padding-top: 130px;
+            }
+            /*Offset so the quick jumps from the left bar are correct*/
+            section[id] {
+                scroll-margin-top: 130px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <!-- Top navigation bar -->
+        <div class="topbar">
+            <h1 style="text-align: center;font-style: italic;font-weight: bolder;color: #1dd8a9;">URL Defender</h1>
+            <a href="{% url 'mainPage' %}">URL checker</a>
+            <a class="active" href="{% url 'resources' %}">Resources</a>
+        </div>
+        <div class="left_sidebar">
+            <a href="#Section1">Introduction</a>
+            <a href="#Section2">Attack Vectors</a>
+            <a href="#Section3">Warning Signs</a>
+            <a href="#badDomain">Bad Domain</a>
+            <a href="#spoofNames">Spoofing</a>
+            <a href="#reachability">Reachability</a>
+            <a href="#httpOrHttps">HTTP/HTTPS</a>
+            <a href="#suspiciousWords">Suspicious Keywords</a>
+            <a href="#extraneousSymbols">Extraneous Symbols</a>
+            <a href="#shortenedURL">URL Shortening</a>
+            <a href="#topLevel">Top Level Domain</a>
+            <a href="#manySubdomains">Many Subdomains</a>
+            <a href="#addressDomain">Address Domains</a>
+        </div>
+        <div class="main_reference_section">
+    
+            <section id="Section1">
+                <h1>URL Safety Introduction</h1>
+                <p>
+                    A URL is the address of a website, kind of like a home address for the internet. When you click a link, your browser trusts that address and takes you wherever it leads. 
+                    Most of the time this is harmless, but sometimes URLs are designed to trick people. A bad URL might look like a real website you know—such as your school, bank, or email 
+                    provider—but it can secretly lead to a fake page made to steal passwords or personal information. This is why URL security matters, especially for people who don’t spend 
+                    much time thinking about links before clicking them.
+                </p>
+            </section>
+            <section id="Section2">
+                <h1>Attack Vector Summary</h1>
+                <p>
+                    Attackers often create risky URLs by copying trusted names, misspelling popular websites, adding extra words like “secure” or “login,” or hiding the real destination behind 
+                    shortened links. These small changes are easy to miss, but they can make a big difference. Before clicking a link, it helps to slow down and check whether the address matches 
+                    what you expect, looks correctly spelled, and starts with “https://.” If a link asks for personal information unexpectedly or feels slightly off, that’s usually a warning sign.
+                    The good news is that avoiding bad URLs doesn’t require advanced technical knowledge. Simple habits like not clicking on unexpected links, typing important website addresses 
+                    yourself, and using tools to check URLs before trusting them can go a long way. URLs may look like random text, but they control where you go online. Learning how to recognize 
+                    safe and unsafe URLs is one of the easiest ways to protect yourself on the internet.
+                </p>
+            </section>
+            <section id="Section3">
+                <h1>Warning Sign List</h1>
+                <p>Below we've collected a list of warning signs indicating a potential malicious website, and links to further resources on how to identify and avoid websites with those warning signs. 
+                    Note that any individual warning sign is not necessarily a problem if you can verify why the site is not using common practice, these are just indicators of a potential issue and should
+                    prompt further scrutiny if they are encountered.
+                </p>
+            </section>
+            <section id="badDomain">
+                <h3>Bad domain names</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://lumu.io/blog/4-ways-threat-actors-weaponize-domain-reputation/">https://lumu.io/blog/4-ways-threat-actors-weaponize-domain-reputation/</a></li>
+                        <li>Intermediate: <a href="https://www.paloaltonetworks.com/cyberpedia/what-are-malicious-newly-registered-domains">https://www.paloaltonetworks.com/cyberpedia/what-are-malicious-newly-registered-domains</a></li>
+                        <li>Advanced: <a href="https://tichung.com/about/experience/nchc-report.pdf">https://tichung.com/about/experience/nchc-report.pdf</a></li>
+                    </ul>
+            </section>
+            <section id="spoofNames">
+                <h3>Names That Imitate Real Domains</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://www.zonealarm.com/resources/what-is-brand-spoofing">https://www.zonealarm.com/resources/what-is-brand-spoofing</a></li>
+                        <li>Intermediate: <a href="https://www.infosecinstitute.com/resources/phishing/overview-of-phishing-techniques-brand-impersonation/">https://www.infosecinstitute.com/resources/phishing/overview-of-phishing-techniques-brand-impersonation/</a></li>
+                        <li>Advanced: <a href="https://arxiv.org/abs/2503.06487">https://arxiv.org/abs/2503.06487</a></li>
+                    </ul>
+            </section>
+            <section id="reachability">
+                <h3>Is The Domain Reachable</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://odown.com/blog/website-monitoring-basics/">https://odown.com/blog/website-monitoring-basics/</a></li>
+                        <li>Intermediate: <a href="https://clickservice.at/en/why-website-monitoring-is-essential-ensuring-availability-performance-and-trust/">https://clickservice.at/en/why-website-monitoring-is-essential-ensuring-availability-performance-and-trust/</a></li>
+                        <li>Advanced: <a href="https://dl.acm.org/doi/10.1145/3704898">https://dl.acm.org/doi/10.1145/3704898</a></li>
+                    </ul>
+            </section>
+            <section id="httpOrHttps">
+                <h3>Use Of HTTPS</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://www.youtube.com/watch?v=MkaPJJnh5LM">https://www.youtube.com/watch?v=MkaPJJnh5LM</a></li>
+                        <li>Intermediate: <a href="https://www.geeksforgeeks.org/computer-networks/difference-between-http-and-https/">https://www.geeksforgeeks.org/computer-networks/difference-between-http-and-https/</a></li>
+                        <li>Advanced: <a href="https://www.researchgate.net/publication/379538956_HTTP_vs_HTTPS_Understanding_the_Difference_and_Importance_of_Secure_Communication">https://www.researchgate.net/publication/379538956_HTTP_vs_HTTPS_Understanding_the_Difference_and_Importance_of_Secure_Communication</a></li>
+                    </ul>
+            </section>
+            <section id="suspiciousWords">
+                <h3>Malformed Header Or Suspicious Words</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://stoneridgesoftware.com/keywords-be-wary-phishing-scams/">https://stoneridgesoftware.com/keywords-be-wary-phishing-scams/</a></li>
+                        <li>Intermediate: <a href="https://www.fbi.gov/how-we-can-help-you/scams-and-safety/common-frauds-and-scams/spoofing-and-phishing">https://www.fbi.gov/how-we-can-help-you/scams-and-safety/common-frauds-and-scams/spoofing-and-phishing</a></li>
+                        <li>Advanced: <a href="https://www.researchgate.net/figure/Suspicious-words-to-detect-phishing-URLs_fig6_364265241">https://www.researchgate.net/figure/Suspicious-words-to-detect-phishing-URLs_fig6_364265241</a></li>
+                    </ul>
+            </section>
+            <section id="extraneousSymbols">
+                <h3>Extraneous Symbols Or Hyphens</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://www.nec.com/en/global/solutions/cybersecurity/blog/220107/index.html">https://www.nec.com/en/global/solutions/cybersecurity/blog/220107/index.html</a></li>
+                        <li>Intermediate: <a href="https://gurudattchoudhary.medium.com/how-cybercriminals-use-the-symbol-to-mask-phishing-links-7983d1028fd1">https://gurudattchoudhary.medium.com/how-cybercriminals-use-the-symbol-to-mask-phishing-links-7983d1028fd1</a></li>
+                        <li>Advanced: <a href="https://ieeexplore.ieee.org/document/10094539">https://ieeexplore.ieee.org/document/10094539</a></li>
+                    </ul>
+            </section>
+            <section id="shortenedURL">
+                <h3>Shortened URLs</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://sproutsocial.com/glossary/url-shortener/">https://sproutsocial.com/glossary/url-shortener/</a></li>
+                        <li>Intermediate: <a href="https://www.kaspersky.com/blog/link-shorteners-privacy-security/48856/">https://www.kaspersky.com/blog/link-shorteners-privacy-security/48856/</a></li>
+                        <li>Advanced: <a href="https://www.researchgate.net/publication/281640595_Security_Threats_of_URL_Shortening_A_User's_Perspective">https://www.researchgate.net/publication/281640595_Security_Threats_of_URL_Shortening_A_User's_Perspective</a></li>
+                    </ul>
+            </section>
+            <section id="topLevel">
+                <h3>Top Level Domain</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://www.cloudflare.com/learning/dns/top-level-domain/">https://www.cloudflare.com/learning/dns/top-level-domain/</a></li>
+                        <li>Intermediate: <a href="https://www.forescout.com/blog/from-urls-to-malware-how-threat-actors-abuse-domain-security-in-2025/">https://www.forescout.com/blog/from-urls-to-malware-how-threat-actors-abuse-domain-security-in-2025/</a></li>
+                        <li>Advanced: <a href="https://www.scitepress.org/Papers/2020/89022/89022.pdf">https://www.scitepress.org/Papers/2020/89022/89022.pdf</a></li>
+                    </ul>
+            </section>
+            <section id="manySubdomains">
+                <h3>Too Many Subdomains</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://www.hostinger.com/tutorials/what-is-a-subdomain">https://www.hostinger.com/tutorials/what-is-a-subdomain</a></li>
+                        <li>Intermediate: <a href="https://www.valimail.com/blog/subdomain-takeover/">https://www.valimail.com/blog/subdomain-takeover/</a></li>
+                        <li>Advanced: <a href="https://ieeexplore.ieee.org/document/10441370">https://ieeexplore.ieee.org/document/10441370</a></li>
+                    </ul>
+            </section>
+            <section id="addressDomain">
+                <h3>Domains That Are Also Addresses</h3>
+                <p>
+                </p>
+                    <ul>
+                        <li>Beginner: <a href="https://www.byrosanna.co.uk/blog/domains-explained">https://www.byrosanna.co.uk/blog/domains-explained</a></li>
+                        <li>Intermediate: <a href="https://larus.net/blog/what-is-ip-address-security/">https://larus.net/blog/what-is-ip-address-security/</a></li>
+                        <li>Advanced: <a href="https://www.mecs-press.org/ijwmt/ijwmt-v14-n2/IJWMT-V14-N2-1.pdf">https://www.mecs-press.org/ijwmt/ijwmt-v14-n2/IJWMT-V14-N2-1.pdf</a></li>
+                    </ul>
+            </section>
+        </div>
+    </body>
 </html>

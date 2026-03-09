@@ -7,48 +7,95 @@
         <meta charset="UTF-8" />
         <title>URL Defender</title>
         <style>
-            /* Reset default margins */
+            /* Style for body */
             body {
-            margin: 0;
-            font-family: Arial, sans-serif;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background-color: #f4f6fb;  
+                color: #222222;             
             }
 
             /* Top bar container */
             .topbar {
-            background-color: #333;
-            overflow: hidden;          /* keeps content inside the bar */
-            position: fixed;           /* stick it to the top */
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;             /* keep it above page content */
+                background-color: #333;
+                overflow: hidden;          /* keeps content inside the bar */
+                position: fixed;           /* stick it to the top */
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1000;             /* keep it above page content */
             }
 
             /* Links inside the top bar */
             .topbar a {
-            float: left;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 16px;
+                float: left;
+                color: #f2f2f2;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                font-size: 16px;
             }
 
             /* Hover effect */
             .topbar a:hover {
-            background-color: #575757;
-            color: white;
+                background-color: #575757;
+                color: white;
             }
 
             /* Highlight the active page link */
             .topbar a.active {
-            background-color: #04AA6D;
-            color: white;
+                background-color: #25eb7e98;
+                color: white;
             }
 
-            /* Page content (add top padding so it isn't hidden behind the fixed bar) */
+            /* Top level container for all text */
             .content {
-            padding: 120px 20px; /* 80px to clear the bar height */
+            padding: 130px 20px; 
+            }
+            /* Entry form containing text box and button */
+            .url-form {
+                width: 100%;
+                display: flex;     
+                flex-direction: column;
+                align-items: center;    
+                gap: 12px;                
+                margin-top: 40px;
+            }
+            /* Input text box */
+            .url-input {
+                width: 100%; 
+                max-width: 500px;
+                padding: 10px 14px;
+                font-size: 18px;
+                border: 2px solid #4b5563;
+                border-radius: 6px;
+                box-sizing: border-box;
+            }
+
+            /* Input submit button */
+            .submit-button {
+                padding: 10px 20px;
+                font-size: 18px;
+                border-radius: 6px;
+                border: none;
+                background-color: #1dd8a9;
+                color: white;
+                cursor: pointer;
+            }
+
+            .submit-button:hover {
+                background-color: #25eb7e98;
+            }
+
+            /* Div to style the box that holds response information*/
+            .responseBox {
+                max-width: 800px;
+                margin: 40px auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                background-color: #ffffff;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             }
         </style>
     </head>
@@ -56,269 +103,265 @@
 
         <!-- Top navigation bar -->
         <div class="topbar">
+            <h1 style="text-align: center;font-size: 200;font-style: italic;font-weight: bolder;color: #1dd8a9;">URL Defender</h1>
             <a class="active" href="{% url 'mainPage' %}">URL checker</a>
             <a href="{% url 'resources' %}">Resources</a>
         </div>
         <div class="content">
   
-            <h1>Hello World!</h1>
-            <p>It will look better with some extra work and some basic HTML templating, but this is where the text entry box will go</p>
-
-            <p>Below the text box, we'll have some mix of generated html and calling up preexisting answer templates.</p>
-            <p>before we're done with the project, we'll have to set up a production server instead of the dev server, but that shouldn't be too bad.</p>
-
-            <form action="{% url 'mainPage' %}" method="post">
+            <p style="text-align: center;">Welcome to the URL Defender safety checker! Enter a URL in the text box below and hit submit to check the URL for vulnerabilities!</p>
+            <form action="{% url 'mainPage' %}" method="post" class="url-form">
                 {% csrf_token %}
-                {{ url_form }}
-                <input type="submit" value="Submit">
+                {{ url_form.urlBox }}
+                <input type="submit" value="Submit" class="submit-button">
             </form>
-            <p>Dynamic scan results:</p>
                 
 
                 {% if scan_results.url %}
-                    <hr>
-                    <h2>Results for: {{ scan_results.url }}</h2>
+                    <div class="responseBox">
+                        <h2>Results for: {{ scan_results.url }}</h2>
 
-                    {% if scan_results.https_result.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong> 
-                            {{ scan_results.https_result.issue }}
+                        {% if scan_results.https_result.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong> 
+                                {{ scan_results.https_result.issue }}
+                            </p>
+                            <p><strong>What it means:</strong> {{ scan_results.https_result.what_it_means }}</p>
+                            <p><strong>How to detect:</strong> {{ scan_results.https_result.how_detected }}</p>
+                            <p><strong>Risk:</strong> {{ scan_results.https_result.risk }}</p>
+                            <p><strong>What you should do:</strong> {{ scan_results.https_result.what_to_do }}</p>
+
+                        {% else %}
+                            <p style="color:green;">
+                                HTTPS Check Passed, your data is secure
+                            </p>
+                            <p><strong>What it means:</strong> {{ scan_results.https_result.what_it_means }}</p>
+                            <p><strong>How to detect:</strong> {{ scan_results.https_result.how_detected }}</p>
+                            <p><strong>Risk:</strong> {{ scan_results.https_result.risk }}</p>
+                            <p><strong>What you should do:</strong> {{ scan_results.https_result.what_to_do }}</p>
+                        {% endif %}
+
+                        <h3>Reachability</h3>
+                        {% if scan_results.reachability.reachable %}
+                            <p style="color:green;"> Site Reachable (Status Code: {{ scan_results.reachability.status_code }})</p>
+                            <p><strong>What it means:</strong> {{ scan_results.reachability.what_it_means }}</p>
+                            <p><strong>How to detect:</strong> {{ scan_results.reachability.how_detected }}</p>
+                            <p><strong>Risk:</strong> {{ scan_results.reachability.risk }}</p>
+                            <p><strong>What you should do:</strong> {{ scan_results.reachability.what_to_do }}</p>
+
+                        {% else %}
+                            <p style="color:red;">
+                                Site Not Reachable
+                            </p>
+                            <p>Error: {{ scan_results.reachability.error }}</p>
+                            <p><strong>What it means:</strong> {{ scan_results.reachability.what_it_means }}</p>
+                            <p><strong>How to detect:</strong> {{ scan_results.reachability.how_detected }}</p>
+                            <p><strong>Risk:</strong> {{ scan_results.reachability.risk }}</p>
+                            <p><strong>What you should do:</strong> {{ scan_results.reachability.what_to_do }}</p>
+                        {% endif %}
+                        <h3>Domain Format Analysis</h3>
+
+                        {% if scan_results.domain_format.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.domain_format.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                Domain Format Check Passed
+                            </p>
+
+                        <p><strong>What it means:</strong> {{ scan_results.domain_format.what_it_means }}</p>
+                        <p><strong>How detected:</strong> {{ scan_results.domain_format.how_detected }}</p>
+                        <p><strong>Risk:</strong> {{ scan_results.domain_format.risk }}</p>
+                        <p><strong>What you should do:</strong> {{ scan_results.domain_format.what_to_do }}</p>
+                        {% endif %}
+
+                        <h3>Shortened URL Analysis</h3>
+
+                        {% if scan_results.shortened_url.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.shortened_url.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                Shortened URL Check Passed
+                            </p>
+                        {% endif %}
+
+                        <p><strong>What it means:</strong> {{ scan_results.shortened_url.what_it_means }}</p>
+                        <p><strong>How detected:</strong> {{ scan_results.shortened_url.how_detected }}</p>
+                        <p><strong>Risk:</strong> {{ scan_results.shortened_url.risk }}</p>
+                        <p><strong>What you should do:</strong> {{ scan_results.shortened_url.what_to_do }}</p>
+
+                        <h3>Domain Impersonation Analysis</h3>
+
+                        {% if scan_results.domain_impersonation.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.domain_impersonation.issue }}
+                            </p>
+
+                            <p><strong>Impersonated Brand:</strong>
+                                {{ scan_results.domain_impersonation.matched_brand }}
+                            </p>
+
+                        {% else %}
+                            <p style="color:green;">
+                                Domain Impersonation Check Passed
+                            </p>
+                        {% endif %}
+
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.domain_impersonation.what_it_means }}</p>
+
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.domain_impersonation.how_detected }}</p>
+
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.domain_impersonation.risk }}</p>
+
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.domain_impersonation.what_to_do }}</p>
+
+                        <p><strong>Domain Visualization:</strong></p>
+
+                        <p style="font-family: monospace; font-size:18px;">
+                        {{ scan_results.domain_impersonation.visual_domain }}
                         </p>
-                        <p><strong>What it means:</strong> {{ scan_results.https_result.what_it_means }}</p>
-                        <p><strong>How to detect:</strong> {{ scan_results.https_result.how_detected }}</p>
-                        <p><strong>Risk:</strong> {{ scan_results.https_result.risk }}</p>
-                        <p><strong>What you should do:</strong> {{ scan_results.https_result.what_to_do }}</p>
 
-                    {% else %}
-                        <p style="color:green;">
-                            HTTPS Check Passed, your data is secure
-                        </p>
-                        <p><strong>What it means:</strong> {{ scan_results.https_result.what_it_means }}</p>
-                        <p><strong>How to detect:</strong> {{ scan_results.https_result.how_detected }}</p>
-                        <p><strong>Risk:</strong> {{ scan_results.https_result.risk }}</p>
-                        <p><strong>What you should do:</strong> {{ scan_results.https_result.what_to_do }}</p>
-                    {% endif %}
+                        <h3>IP Address Domain Analysis</h3>
 
-                    <h3>Reachability</h3>
-                    {% if scan_results.reachability.reachable %}
-                        <p style="color:green;"> Site Reachable (Status Code: {{ scan_results.reachability.status_code }})</p>
-                        <p><strong>What it means:</strong> {{ scan_results.reachability.what_it_means }}</p>
-                        <p><strong>How to detect:</strong> {{ scan_results.reachability.how_detected }}</p>
-                        <p><strong>Risk:</strong> {{ scan_results.reachability.risk }}</p>
-                        <p><strong>What you should do:</strong> {{ scan_results.reachability.what_to_do }}</p>
+                        {% if scan_results.ip_domain.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.ip_domain.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                IP Address Domain Check Passed
+                            </p>
+                        {% endif %}
 
-                    {% else %}
-                        <p style="color:red;">
-                            Site Not Reachable
-                        </p>
-                        <p>Error: {{ scan_results.reachability.error }}</p>
-                        <p><strong>What it means:</strong> {{ scan_results.reachability.what_it_means }}</p>
-                        <p><strong>How to detect:</strong> {{ scan_results.reachability.how_detected }}</p>
-                        <p><strong>Risk:</strong> {{ scan_results.reachability.risk }}</p>
-                        <p><strong>What you should do:</strong> {{ scan_results.reachability.what_to_do }}</p>
-                    {% endif %}
-                    <h3>Domain Format Analysis</h3>
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.ip_domain.what_it_means }}</p>
 
-                    {% if scan_results.domain_format.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong>
-                            {{ scan_results.domain_format.issue }}
-                        </p>
-                    {% else %}
-                        <p style="color:green;">
-                            Domain Format Check Passed
-                        </p>
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.ip_domain.how_detected }}</p>
 
-                    <p><strong>What it means:</strong> {{ scan_results.domain_format.what_it_means }}</p>
-                    <p><strong>How detected:</strong> {{ scan_results.domain_format.how_detected }}</p>
-                    <p><strong>Risk:</strong> {{ scan_results.domain_format.risk }}</p>
-                    <p><strong>What you should do:</strong> {{ scan_results.domain_format.what_to_do }}</p>
-                    {% endif %}
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.ip_domain.risk }}</p>
 
-                    <h3>Shortened URL Analysis</h3>
-
-                    {% if scan_results.shortened_url.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong>
-                            {{ scan_results.shortened_url.issue }}
-                        </p>
-                    {% else %}
-                        <p style="color:green;">
-                            Shortened URL Check Passed
-                        </p>
-                    {% endif %}
-
-                    <p><strong>What it means:</strong> {{ scan_results.shortened_url.what_it_means }}</p>
-                    <p><strong>How detected:</strong> {{ scan_results.shortened_url.how_detected }}</p>
-                    <p><strong>Risk:</strong> {{ scan_results.shortened_url.risk }}</p>
-                    <p><strong>What you should do:</strong> {{ scan_results.shortened_url.what_to_do }}</p>
-
-                    <h3>Domain Impersonation Analysis</h3>
-
-                    {% if scan_results.domain_impersonation.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong>
-                            {{ scan_results.domain_impersonation.issue }}
-                        </p>
-
-                        <p><strong>Impersonated Brand:</strong>
-                            {{ scan_results.domain_impersonation.matched_brand }}
-                        </p>
-
-                    {% else %}
-                        <p style="color:green;">
-                            Domain Impersonation Check Passed
-                        </p>
-                    {% endif %}
-
-                    <p><strong>What it means:</strong>
-                    {{ scan_results.domain_impersonation.what_it_means }}</p>
-
-                    <p><strong>How detected:</strong>
-                    {{ scan_results.domain_impersonation.how_detected }}</p>
-
-                    <p><strong>Risk:</strong>
-                    {{ scan_results.domain_impersonation.risk }}</p>
-
-                    <p><strong>What you should do:</strong>
-                    {{ scan_results.domain_impersonation.what_to_do }}</p>
-
-                    <p><strong>Domain Visualization:</strong></p>
-
-                    <p style="font-family: monospace; font-size:18px;">
-                    {{ scan_results.domain_impersonation.visual_domain }}
-                    </p>
-
-                    <h3>IP Address Domain Analysis</h3>
-
-                    {% if scan_results.ip_domain.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong>
-                            {{ scan_results.ip_domain.issue }}
-                        </p>
-                    {% else %}
-                        <p style="color:green;">
-                            IP Address Domain Check Passed
-                        </p>
-                    {% endif %}
-
-                    <p><strong>What it means:</strong>
-                    {{ scan_results.ip_domain.what_it_means }}</p>
-
-                    <p><strong>How detected:</strong>
-                    {{ scan_results.ip_domain.how_detected }}</p>
-
-                    <p><strong>Risk:</strong>
-                    {{ scan_results.ip_domain.risk }}</p>
-
-                    <p><strong>What you should do:</strong>
-                    {{ scan_results.ip_domain.what_to_do }}</p>
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.ip_domain.what_to_do }}</p>
 
 
-                    <h3>Suspicious Keyword Analysis</h3>
+                        <h3>Suspicious Keyword Analysis</h3>
 
-                    {% if scan_results.suspicious_keywords.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong>
-                            {{ scan_results.suspicious_keywords.issue }}
-                        </p>
-                    {% else %}
-                        <p style="color:green;">
-                            Suspicious Keyword Check Passed
-                        </p>
-                    {% endif %}
+                        {% if scan_results.suspicious_keywords.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.suspicious_keywords.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                Suspicious Keyword Check Passed
+                            </p>
+                        {% endif %}
 
-                    <p><strong>What it means:</strong>
-                    {{ scan_results.suspicious_keywords.what_it_means }}</p>
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.suspicious_keywords.what_it_means }}</p>
 
-                    <p><strong>How detected:</strong>
-                    {{ scan_results.suspicious_keywords.how_detected }}</p>
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.suspicious_keywords.how_detected }}</p>
 
-                    <p><strong>Risk:</strong>
-                    {{ scan_results.suspicious_keywords.risk }}</p>
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.suspicious_keywords.risk }}</p>
 
-                    <p><strong>What you should do:</strong>
-                    {{ scan_results.suspicious_keywords.what_to_do }}</p>
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.suspicious_keywords.what_to_do }}</p>
 
-                    <h3>Top Level Domain Analysis</h3>
+                        <h3>Top Level Domain Analysis</h3>
 
-                    {% if scan_results.tld_analysis.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong>
-                            {{ scan_results.tld_analysis.issue }}
-                        </p>
-                    {% else %}
-                        <p style="color:green;">
-                            Top Level Domain Check Passed
-                        </p>
-                    {% endif %}
+                        {% if scan_results.tld_analysis.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.tld_analysis.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                Top Level Domain Check Passed
+                            </p>
+                        {% endif %}
 
-                    <p><strong>What it means:</strong>
-                    {{ scan_results.tld_analysis.what_it_means }}</p>
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.tld_analysis.what_it_means }}</p>
 
-                    <p><strong>How detected:</strong>
-                    {{ scan_results.tld_analysis.how_detected }}</p>
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.tld_analysis.how_detected }}</p>
 
-                    <p><strong>Risk:</strong>
-                    {{ scan_results.tld_analysis.risk }}</p>
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.tld_analysis.risk }}</p>
 
-                    <p><strong>What you should do:</strong>
-                    {{ scan_results.tld_analysis.what_to_do }}</p>
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.tld_analysis.what_to_do }}</p>
 
-                    <h3>Subdomain Analysis</h3>
+                        <h3>Subdomain Analysis</h3>
 
-                    {% if scan_results.subdomain_analysis.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong>
-                            {{ scan_results.subdomain_analysis.issue }}
-                        </p>
-                    {% else %}
-                        <p style="color:green;">
-                            Subdomain Check Passed
-                        </p>
-                    {% endif %}
+                        {% if scan_results.subdomain_analysis.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.subdomain_analysis.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                Subdomain Check Passed
+                            </p>
+                        {% endif %}
 
-                    <p><strong>What it means:</strong>
-                    {{ scan_results.subdomain_analysis.what_it_means }}</p>
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.subdomain_analysis.what_it_means }}</p>
 
-                    <p><strong>How detected:</strong>
-                    {{ scan_results.subdomain_analysis.how_detected }}</p>
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.subdomain_analysis.how_detected }}</p>
 
-                    <p><strong>Risk:</strong>
-                    {{ scan_results.subdomain_analysis.risk }}</p>
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.subdomain_analysis.risk }}</p>
 
-                    <p><strong>What you should do:</strong>
-                    {{ scan_results.subdomain_analysis.what_to_do }}</p>
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.subdomain_analysis.what_to_do }}</p>
 
 
 
-                    <h3>Known Malicious Domain Analysis</h3>
+                        <h3>Known Malicious Domain Analysis</h3>
 
-                    {% if scan_results.malicious_domain_list.vulnerable %}
-                        <p style="color:red;">
-                            <strong>Vulnerability:</strong>
-                            {{ scan_results.malicious_domain_list.issue }}
-                        </p>
-                    {% else %}
-                        <p style="color:green;">
-                            Known Malicious Domain Check Passed
-                        </p>
-                    {% endif %}
+                        {% if scan_results.malicious_domain_list.vulnerable %}
+                            <p style="color:red;">
+                                <strong>Vulnerability:</strong>
+                                {{ scan_results.malicious_domain_list.issue }}
+                            </p>
+                        {% else %}
+                            <p style="color:green;">
+                                Known Malicious Domain Check Passed
+                            </p>
+                        {% endif %}
 
-                    <p><strong>What it means:</strong>
-                    {{ scan_results.malicious_domain_list.what_it_means }}</p>
+                        <p><strong>What it means:</strong>
+                        {{ scan_results.malicious_domain_list.what_it_means }}</p>
 
-                    <p><strong>How detected:</strong>
-                    {{ scan_results.malicious_domain_list.how_detected }}</p>
+                        <p><strong>How detected:</strong>
+                        {{ scan_results.malicious_domain_list.how_detected }}</p>
 
-                    <p><strong>Risk:</strong>
-                    {{ scan_results.malicious_domain_list.risk }}</p>
+                        <p><strong>Risk:</strong>
+                        {{ scan_results.malicious_domain_list.risk }}</p>
 
-                    <p><strong>What you should do:</strong>
-                    {{ scan_results.malicious_domain_list.what_to_do }}</p>
+                        <p><strong>What you should do:</strong>
+                        {{ scan_results.malicious_domain_list.what_to_do }}</p>
 
+
+                    </div>
                 {% endif %}
-
             </p>
         </div>
     </body>
