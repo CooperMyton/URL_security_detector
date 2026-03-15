@@ -190,6 +190,10 @@
                                 <strong>Vulnerability:</strong>
                                 {{ scan_results.domain_format.issue }}
                             </p>
+                            <p><strong>What it means:</strong> {{ scan_results.domain_format.what_it_means }}</p>
+                            <p><strong>How detected:</strong> {{ scan_results.domain_format.how_detected }}</p>
+                            <p><strong>Risk:</strong> {{ scan_results.domain_format.risk }}</p>
+                            <p><strong>What you should do:</strong> {{ scan_results.domain_format.what_to_do }}</p>
                         {% else %}
                             <p style="color:green;">
                                 Domain Format Check Passed
