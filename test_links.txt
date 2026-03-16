@@ -1,0 +1,224 @@
+Test links separated by vulnerability and 5 that should pass and 5 that shouldn't 
+Please do not visit any of these links
+
+
+Protocol:
+    Pass:
+    https://google.com
+    https://github.com
+    https://paypal.com
+    https://amazon.com
+    https://wikipedia.org
+
+    Fail:
+    http://google.com
+    http://github.com
+    http://paypal.com
+    http://amazon.com
+    http://example.org
+
+Reachability:
+    Pass:
+    https://google.com
+    https://github.com
+    https://paypal.com
+    https://amazon.com
+    https://wikipedia.org
+
+    Fail:
+    https://secure-login-account-update.com
+    https://paypal-security-verification.net
+    https://verify-account-update-login.org
+    https://account-security-reset-password.com
+    https://bank-login-confirmation-update.net
+
+Domain format:
+    Pass:
+    https://google.com
+    https://amazon.com
+    https://paypal.com
+    https://stackoverflow.com
+    https://wikipedia.org
+    
+    Fail:
+    https://secure-login-account-update.com
+    https://paypal-security-verification.net
+    https://verify-account-update-login.org
+    https://account-security-reset-password.com
+    https://bank-login-confirmation-update.net
+
+Shortened URL:
+    Pass:
+    https://google.com/docs
+    https://github.com/login
+    https://amazon.com/orders
+    https://paypal.com/home
+    https://wikipedia.org/wiki/Security
+
+    Fail:
+    https://bit.ly/security-update
+    https://tinyurl.com/paypalverify
+    https://t.co/securelogin
+    https://goo.gl/accountupdate
+    https://is.gd/resetpassword
+
+Domain Impersonation:
+    Pass:
+    https://paypal.com
+    https://amazon.com
+    https://github.com
+    https://microsoft.com
+    https://apple.com
+
+    Fail:
+    http://paypa1.com
+    http://amaz0n.com
+    http://micros0ft.net
+    http://1nstagram.com
+    http://app1e.com
+
+IP address domains:
+    Pass:
+    https://google.com
+    https://amazon.com
+    https://github.com
+    https://microsoft.com
+    https://wikipedia.org
+
+    Fail:
+    http://192.168.1.1/login
+    http://10.0.0.5/account
+    http://172.16.0.22/verify
+    http://203.0.113.45/reset
+    http://198.51.100.99/secure-login
+
+Suspicious Keywords:
+    Pass:
+    https://google.com/search
+    https://github.com/features
+    https://amazon.com/books
+    https://wikipedia.org/wiki/Computer_security
+    https://apple.com/iphone
+
+    Fail:
+    http://secure-login-update.com
+    http://verify-account-security.net
+    http://password-reset-confirmation.org
+    http://bank-account-verification-update.com
+    http://login-security-alert-update.net
+
+Top Level Domain:
+    Pass:
+    https://google.com
+    https://amazon.com
+    https://github.com
+    https://wikipedia.org
+    https://paypal.com
+
+    Fail:
+    http://secure-login.xyz
+    http://account-update.top
+    http://verify-security.club
+    http://paypal-update.tk
+    http://bank-login.cc
+
+Subdomain:
+    Pass:
+    https://mail.google.com
+    https://docs.github.com
+    https://support.apple.com
+    https://developer.mozilla.org
+    https://news.bbc.com
+
+    Fail:
+    http://login.verify.account.security.paypal.com.fake-site.xyz
+    http://update.account.security.login.bank.example.top
+    http://verify.security.update.paypal-login.xyz
+    http://secure.login.verify.account.update.example.click
+    http://account.security.verify.login.example.top
+
+Known Malicious Domains:
+    Pass:
+    https://google.com
+    https://amazon.com
+    https://github.com
+    https://apple.com
+    https://microsoft.com
+
+    Fail:
+    http://007mailbox.com
+    http://0039keh.icu
+    http://00983.click
+    http://001975421.icu
+    http://00-202828spas.cfd
+
+Path:
+    Pass:
+    https://google.com/about
+    https://github.com/features
+    https://amazon.com/books
+    https://wikipedia.org/wiki/Python
+    https://apple.com/iphone
+
+    Fail:
+    http://example.com/login/verify-account
+    http://example.com/reset-password/security-check
+    http://example.com/update-account-information
+    http://example.com/confirm-bank-details
+    http://example.com/secure-login-validation
+
+Query String:
+    Pass: 
+    https://google.com/search?q=python
+    https://github.com/search?q=django
+    https://amazon.com/s?k=laptop
+    https://wikipedia.org/wiki/Security
+    https://youtube.com/results?search_query=ai
+
+    Fail:
+    http://example.com/login?password=123
+    http://example.com/verify?account=update&password=reset
+    http://example.com/reset?token=93824&password=confirm
+    http://example.com/security?verify=true&login=true
+    http://example.com/account?confirm=password&update=true
+
+Anchor:
+    Pass:
+    https://example.com/page#section1
+    https://docs.python.org#introduction
+    https://wikipedia.org/wiki/Security#History
+    https://developer.mozilla.org/en-US/docs#overview
+    https://github.com#readme
+
+    Fail:
+    http://example.com/login#verify-account
+    http://example.com/security#reset-password
+    http://example.com/update#confirm-account
+    http://example.com/login#secure-update
+    http://example.com/account#verify-login
+
+
+Overall Safe URLS:
+    https://google.com
+    https://github.com
+    https://amazon.com
+    https://wikipedia.org
+    https://apple.com
+    https://microsoft.com
+    https://stackoverflow.com
+    https://bbc.com
+    https://nytimes.com
+    https://openai.com
+
+
+
+
+
+
+
+
+
+
+
+
+
